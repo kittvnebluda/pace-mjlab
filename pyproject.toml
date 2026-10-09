@@ -9,8 +9,9 @@ requires-python = ">=3.12"
 dependencies = ["mjlab==1.6.0", "cmaes==0.13.1", "matplotlib>=3.9", "tensorboard>=2.17"]
 
 [project.scripts]
-pace-data-collection = "pace_mjlab.scripts.data_collection:main"
-pace-fit = "pace_mjlab.scripts.fit:main"
+collect-data = "pace_mjlab.scripts.data_collection:main"
+fit = "pace_mjlab.scripts.fit:main"
+show-ident = "pace_mjlab.scripts.show:main"
 
 [build-system]
 requires = ["uv_build>=0.11.21,<0.13.0"]
