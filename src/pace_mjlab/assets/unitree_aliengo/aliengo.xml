@@ -11,7 +11,7 @@
                 <joint axis="1 0 0" range="-1.2217304763960306 1.2217304763960306" />
             </default>
             <default class="hip">
-                <joint />
+                <joint range="-2.0943951023931953 4.1887902047863905" />
             </default>
             <default class="knee">
                 <joint range="-2.775073510670984 -0.6457718232379019" />
