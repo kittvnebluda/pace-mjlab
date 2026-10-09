@@ -98,8 +98,11 @@ def aliengo_pace_cfg() -> PaceCfg:
         # hip +-0.3, thigh 0.5..1.1, calf -2.1..-0.9 rad: inside the MJCF limits (hip +-1.22, calf -2.78..-0.65);
         # thigh amplitude 0.3, not 0.5: at 0.5 the 10 Hz end clipped ~10% of thigh samples on the envelope
         chirp=ChirpCfg(center=[0.0, 0.8, -1.5] * 4, amplitude=[0.3, 0.3, 0.6] * 4),
-        # Kd 0.5, not 2: with Kd 2 the D term kept the thigh PD torque off the torque-speed line
-        step=StepCfg(center=[0.0, 0.8, -1.5] * 4, amplitude=[0.5, 0.6, 0.6] * 4, kd=0.5),
+        # Kd 0.5, not 2: with Kd 2 the D term kept the thigh PD torque off the torque-speed line. With Kd 0.5
+        # the joints overshoot far past the targets, so the centers keep the swings inside the URDF limits
+        # (hip +-1.222, thigh -2.094..4.189, calf -2.775..-0.646): hip -0.2 balances the larger positive steps,
+        # calf -1.7 is the middle of its range
+        step=StepCfg(center=[-0.2, 0.8, -1.7] * 4, amplitude=[0.5, 0.6, 0.5] * 4, kd=0.5),
         envelope=EnvelopeCfg(
             data_dir="aliengo_sim/step_data.pt",
             groups={"hip": ".*_hip_joint", "thigh": ".*_thigh_joint", "knee": ".*_calf_joint"},
