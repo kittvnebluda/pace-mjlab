@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+typings
+
+# Virtual environments
+.venv
+
+# Data and logs, as in pace-sim2real
+data/
+logs/
+MUJOCO_LOG.TXT
