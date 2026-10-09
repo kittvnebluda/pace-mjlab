@@ -3,6 +3,7 @@
 
 """PACE settings for the Aliengo, the same values as pace-sim2real's ``Isaac-Pace-Aliengo-v0``."""
 
+import math
 from dataclasses import dataclass, field
 
 import torch
@@ -77,6 +78,7 @@ class PaceCfg:
     chirp: ChirpCfg
     step: StepCfg
     envelope: EnvelopeCfg
+    joint_limits: dict[str, tuple[float, float]]  # hardware position limits per joint regex [rad]
     synthetic: SyntheticParamsCfg = field(default_factory=SyntheticParamsCfg)
     cmaes: CMAESOptimizerCfg = field(default_factory=CMAESOptimizerCfg)
 
@@ -95,6 +97,12 @@ def aliengo_pace_cfg() -> PaceCfg:
         data_dir="aliengo_sim/chirp_data.pt",
         joint_order=list(JOINT_ORDER),
         bounds_params=bounds,
+        # position limits from the URDF (Unitree aliengo const.xacro), the same values as the bundled MJCF
+        joint_limits={
+            ".*_hip_joint": (math.radians(-70.0), math.radians(70.0)),
+            ".*_thigh_joint": (math.radians(-120.0), math.radians(240.0)),
+            ".*_calf_joint": (math.radians(-159.0), math.radians(-37.0)),
+        },
         # hip +-0.3, thigh 0.5..1.1, calf -2.1..-0.9 rad: inside the MJCF limits (hip +-1.22, calf -2.78..-0.65);
         # thigh amplitude 0.3, not 0.5: at 0.5 the 10 Hz end clipped ~10% of thigh samples on the envelope
         chirp=ChirpCfg(center=[0.0, 0.8, -1.5] * 4, amplitude=[0.3, 0.3, 0.6] * 4),

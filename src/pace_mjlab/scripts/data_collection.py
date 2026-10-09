@@ -3,6 +3,7 @@
 
 """Collect synthetic PACE data (chirp or steps) with the ground-truth parameters, as pace-sim2real does."""
 
+import re
 from dataclasses import dataclass
 from typing import Literal
 
@@ -37,6 +38,38 @@ class Args:
     duration: float = 20.0
     """Duration of the excitation signal [s]."""
     device: str = "cuda:0"
+
+
+def report_joint_limits(
+    joint_order: list[str],
+    position: torch.Tensor,
+    hardware_limits: dict[str, tuple[float, float]],
+    sim_limits: torch.Tensor,
+) -> None:
+    """Print each joint's position range against its hardware (URDF) and simulator limits, warn on violations.
+
+    ``position`` holds the true joint positions, shape (num_steps, len(joint_order)); ``sim_limits`` has shape
+    (len(joint_order), 2).
+    """
+    print("[INFO]: joint position range vs limits [rad]")
+    header = f"{'joint':<16} {'q min':>7} {'q max':>7} {'URDF lo':>8} {'URDF hi':>8} {'margin':>7}"
+    print(f"  {header} {'sim lo':>8} {'sim hi':>8}")
+    violations = []
+    for j, name in enumerate(joint_order):
+        matches = [limits for pattern, limits in hardware_limits.items() if re.fullmatch(pattern, name)]
+        if len(matches) != 1:
+            raise ValueError(f"joint {name} must match exactly one joint_limits pattern, matches {len(matches)}")
+        low, high = matches[0]
+        q_min, q_max = position[:, j].min().item(), position[:, j].max().item()
+        margin = min(q_min - low, high - q_max)
+        print(
+            f"  {name:<16} {q_min:+7.3f} {q_max:+7.3f} {low:+8.3f} {high:+8.3f} {margin:+7.3f}"
+            f" {sim_limits[j, 0].item():+8.3f} {sim_limits[j, 1].item():+8.3f}"
+        )
+        if margin < 0:
+            violations.append((name, -margin))
+    for name, excess in violations:
+        print(f"[WARN]: {name} exceeds its URDF limit by {excess:.3f} rad")
 
 
 def main() -> None:
@@ -140,6 +173,10 @@ def main() -> None:
                 f" {int(at_limit.sum()):7d} ({at_limit.float().mean().item():5.1%})"
             )
     print("  speeds in rad/s; corner: speed above which the torque-speed line is below the effort limit")
+    # recorded positions are in the encoder frame (q - bias)
+    report_joint_limits(
+        joint_order, dof_pos_buffer + bias[0], cfg.joint_limits, robot.data.joint_pos_limits[0, joint_ids]
+    )
 
     data_dir = PROJECT_ROOT / "data" / cfg.robot_name
     data_dir.mkdir(parents=True, exist_ok=True)
