@@ -14,3 +14,13 @@ typings
 data/
 logs/
 MUJOCO_LOG.TXT
+
+# CMA-ES runs and tensors: regenerate with collect-data / fit (figures are committed as PNG in docs/figures)
+*.pt
+events.out.tfevents.*
+
+# Backups and temporary files
+*~
+*.bak
+*.orig
+*.swp
