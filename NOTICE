@@ -1,0 +1,11 @@
+pace-mjlab
+
+Copyright 2026 Grigorii Sizikov
+
+This product includes software from PACE (https://github.com/leggedrobotics/pace-sim2real):
+Copyright 2025 ETH Zurich, Robotic Systems Lab, Filip Bjelonic
+Licensed under the Apache License, Version 2.0.
+The CMA-ES optimizer in src/pace_mjlab/optim/cma_es.py is ported from PACE.
+
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file for details.
