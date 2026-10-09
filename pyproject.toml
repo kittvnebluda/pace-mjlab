@@ -2,10 +2,15 @@
 name = "pace-mjlab"
 version = "0.1.0"
 description = "PACE joint and actuator identification on mjlab (MuJoCo Warp)"
+readme = "README.md"
 license = "Apache-2.0"
 authors = [{ name = "litt", email = "kittnablude@gmail.com" }]
 requires-python = ">=3.12"
-dependencies = ["mjlab==1.6.0", "cmaes==0.13.1", "tensorboard>=2.17"]
+dependencies = ["mjlab==1.6.0", "cmaes==0.13.1", "matplotlib>=3.9", "tensorboard>=2.17"]
+
+[project.scripts]
+pace-data-collection = "pace_mjlab.scripts.data_collection:main"
+pace-fit = "pace_mjlab.scripts.fit:main"
 
 [build-system]
 requires = ["uv_build>=0.11.21,<0.13.0"]
